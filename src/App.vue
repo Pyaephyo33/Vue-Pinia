@@ -1,47 +1,54 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
   <main>
-    <TheWelcome />
+    <!-- heading -->
+    <header>
+      <img src="./assets/pinia-logo.svg" alt="pinia logo">
+      <h1>Pinia Tasks</h1>
+    </header>
+    <!-- new task form -->
+    <div class="new-task-form">
+      <TaskForm />
+    </div>
+
+    <!-- filter -->
+    <nav class="filter">
+      <button @click="filter = 'all'">All tasks</button>
+      <button @click="filter = 'favs'">Fav tasks</button>
+    </nav>
+
+    <!-- task list -->
+    <div class="task-list" v-if="filter === 'all'">
+      <p>You have {{ taskStore.totalCount }} tasks left to do</p>
+      <div v-for="task in taskStore.tasks">
+        <TaskDetails :task="task" />
+      </div>
+    </div>
+    <div class="task-list" v-if="filter === 'favs'">
+      <p>You have {{ taskStore.favCount }} favs left to do</p>
+      <div v-for="task in taskStore.favs">
+        <TaskDetails :task="task" />
+      </div>
+    </div>
+
   </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script>
+  import { ref } from 'vue'
+  import TaskDetails from './components/TaskDetails.vue'
+  import { useTaskStore } from './stores/TaskStore'
+  import TaskForm from './components/TaskForm.vue'
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+  export default {
+    components: {
+    TaskDetails,
+    TaskForm
+},
+    setup() {
+      const taskStore = useTaskStore()
+      const filter = ref('all')
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+      return { taskStore,filter }
+    }
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+</script>
